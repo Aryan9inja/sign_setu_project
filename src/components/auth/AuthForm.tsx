@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { supabase } from '@/lib/supabaseClient';
+import Link from 'next/link';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -75,22 +76,22 @@ export default function AuthForm({ mode }: AuthFormProps) {
             {mode === 'login' ? (
               <>
                 Don't have an account?{' '}
-                <a
+                <Link
                   href="/auth/signup"
                   className="font-medium text-indigo-600 hover:text-indigo-500"
                 >
                   Sign up
-                </a>
+                </Link>
               </>
             ) : (
               <>
                 Already have an account?{' '}
-                <a
+                <Link
                   href="/auth/login"
                   className="font-medium text-indigo-600 hover:text-indigo-500"
                 >
                   Sign in
-                </a>
+                </Link>
               </>
             )}
           </p>

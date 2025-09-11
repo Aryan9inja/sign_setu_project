@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
+import Link from "next/link";
 
 export default function Home() {
   const [progress, setProgress] = useState<any>([]);
@@ -53,18 +54,18 @@ export default function Home() {
                 </>
               ) : (
                 <div className="space-x-2">
-                  <a
+                  <Link
                     href="/auth/login"
                     className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Sign In
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/auth/signup"
                     className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     Sign Up
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
@@ -133,18 +134,18 @@ export default function Home() {
                 Please sign in or create an account to continue
               </p>
               <div className="space-x-4">
-                <a
+                <Link
                   href="/auth/login"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
                 >
                   Sign In
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/auth/signup"
                   className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                   Sign Up
-                </a>
+                </Link>
               </div>
             </div>
           </div>
