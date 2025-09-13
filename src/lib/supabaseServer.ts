@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { NextRequest } from "next/server";
 
 export function createClient(request: NextRequest) {
@@ -10,8 +10,8 @@ export function createClient(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet: any) {
-          // Not needed
+        setAll() {
+          // Not needed for server-side operations
         },
       },
     }

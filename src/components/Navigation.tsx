@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { User } from '@supabase/supabase-js';
 
 interface NavigationProps {
-  user: any;
+  user: User | null;
   userRole: string | null;
   signOut: () => void;
 }
