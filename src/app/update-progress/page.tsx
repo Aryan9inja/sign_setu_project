@@ -19,6 +19,17 @@ export interface ProgressRecord {
   student_name?: string;
 }
 
+interface ProgressRaw {
+  id: string;
+  user_id: string;
+  progress_percent: number;
+  users: Array<{
+    id: string;
+    email: string;
+    user_name: string;
+  }>;
+}
+
 export default function UpdateProgressPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -76,17 +87,18 @@ export default function UpdateProgressPage() {
           }
 
           const transformedData: ProgressRecord[] =
-            progressData?.map((item: any) => ({
+            progressData?.map((item: ProgressRaw) => ({
               id: item.id,
               user_id: item.user_id,
               progress_percent: item.progress_percent,
-              student_email: item.users?.email || "N/A",
-              student_name: item.users?.user_name || "N/A",
+              student_email: item.users?.[0]?.email || "N/A",
+              student_name: item.users?.[0]?.user_name || "N/A",
             })) || [];
 
           setProgress(transformedData);
-        } catch (err: any) {
-          setError("Failed to fetch progress data: " + err.message);
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+          setError("Failed to fetch progress data: " + errorMessage);
         }
       }
     };
@@ -136,8 +148,9 @@ export default function UpdateProgressPage() {
           p.id === recordId ? { ...p, progress_percent: newProgress } : p
         )
       );
-    } catch (err: any) {
-      setError("Failed to save progress: " + err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError("Failed to save progress: " + errorMessage);
       throw err;
     }
   };

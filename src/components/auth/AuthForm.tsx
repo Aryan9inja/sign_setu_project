@@ -58,8 +58,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
         router.push('/');
       }
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -75,7 +76,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           <p className="mt-2 text-center text-sm text-gray-600">
             {mode === 'login' ? (
               <>
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link
                   href="/auth/signup"
                   className="font-medium text-indigo-600 hover:text-indigo-500"

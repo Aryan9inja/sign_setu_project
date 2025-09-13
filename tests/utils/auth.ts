@@ -10,7 +10,10 @@ export async function getStudentJwt() {
     password: process.env.STUDENT_PASSWORD!,
   });
   if (error) throw error;
-  return data.session?.access_token!;
+  if (!data.session?.access_token) {
+    throw new Error('Failed to get access token for student');
+  }
+  return data.session.access_token;
 }
 
 export async function getTeacherJwt() {
@@ -23,5 +26,8 @@ export async function getTeacherJwt() {
     password: process.env.TEACHER_PASSWORD!,
   });
   if (error) throw error;
-  return data.session?.access_token!;
+  if (!data.session?.access_token) {
+    throw new Error('Failed to get access token for teacher');
+  }
+  return data.session.access_token;
 }

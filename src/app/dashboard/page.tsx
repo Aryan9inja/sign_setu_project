@@ -40,7 +40,7 @@ export default function DashboardPage() {
               </h2>
               <p className="text-gray-600">
                 This page can only be accessed by authenticated users. 
-                If you're not logged in, you'll be redirected to the login page.
+                If you&apos;re not logged in, you&apos;ll be redirected to the login page.
               </p>
               
               <div className="mt-6 bg-white shadow rounded-lg p-6">

@@ -19,6 +19,18 @@ export interface ClassroomRecord {
   student_name?: string;
 }
 
+interface ClassroomRaw {
+  id: string;
+  user_id: string;
+  class_name: string;
+  grade: number;
+  users: Array<{
+    id: string;
+    email: string;
+    user_name: string;
+  }>;
+}
+
 export interface UpdateProps {
   recordId: string;
   oldData: {
@@ -89,18 +101,19 @@ export default function UpdateClassroomPage() {
           }
 
           const transformedData: ClassroomRecord[] =
-            classroomData?.map((item: any) => ({
+            classroomData?.map((item: ClassroomRaw) => ({
               id: item.id,
               user_id: item.user_id,
               class_name: item.class_name,
               grade: item.grade,
-              student_email: item.users?.email || "N/A",
-              student_name: item.users?.user_name || "N/A",
+              student_email: item.users?.[0]?.email || "N/A",
+              student_name: item.users?.[0]?.user_name || "N/A",
             })) || [];
 
           setClassroom(transformedData);
-        } catch (err: any) {
-          setError("Failed to fetch classrooms data: " + err.message);
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+          setError("Failed to fetch classrooms data: " + errorMessage);
         }
       }
     };
@@ -149,8 +162,9 @@ export default function UpdateClassroomPage() {
       setClassroom((prev) =>
         prev.map((c) => (c.id === recordId ? { ...c, ...newData } : c))
       );
-    } catch (err: any) {
-      setError("Failed to save classroom: " + err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError("Failed to save classroom: " + errorMessage);
       throw err;
     }
   };
