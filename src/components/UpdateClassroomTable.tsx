@@ -18,7 +18,7 @@ export default function UpdateClassroomTable({
   onClassroomUpdate, 
   onClassroomChange 
 }: UpdateClassroomTableProps) {
-  const [editingValues, setEditingValues] = useState<{ [key: string]: { class_name: string; grade: number } }>({});
+  const [editingValues, setEditingValues] = useState<{ [key: string]: { class_name: string; grade: number | string } }>({});
   const [saving, setSaving] = useState<string | null>(null);
 
   // Initialize editing values when classrooms change
@@ -38,7 +38,7 @@ export default function UpdateClassroomTable({
       ...prev,
       [recordId]: {
         ...prev[recordId],
-        [field]: field === 'grade' ? Number(newValue) : String(newValue)
+        [field]: field === 'grade' ? newValue : String(newValue)
       }
     }));
   };
@@ -47,7 +47,17 @@ export default function UpdateClassroomTable({
     const record = classrooms.find(c => c.id === recordId);
     if (!record) return;
 
-    const newData = editingValues[recordId];
+    const editingData = editingValues[recordId];
+    // Convert grade to number, handle empty string as 0
+    const gradeValue = typeof editingData.grade === 'string' 
+      ? (editingData.grade === '' ? 0 : parseInt(editingData.grade) || 0)
+      : editingData.grade;
+      
+    const newData = {
+      class_name: editingData.class_name,
+      grade: gradeValue
+    };
+    
     const oldData = {
       class_name: record.class_name,
       grade: record.grade
@@ -74,6 +84,15 @@ export default function UpdateClassroomTable({
         );
         onClassroomChange(updatedClassrooms);
       }
+      
+      // Update local editing value to the final number
+      setEditingValues(prev => ({
+        ...prev,
+        [recordId]: {
+          ...prev[recordId],
+          grade: gradeValue
+        }
+      }));
     } catch (error) {
       // Revert the editing values on error
       setEditingValues(prev => ({
@@ -99,7 +118,12 @@ export default function UpdateClassroomTable({
     const editingValue = editingValues[recordId];
     if (!editingValue) return false;
     
-    return editingValue.class_name !== record.class_name || editingValue.grade !== record.grade;
+    // Convert grade to number for comparison
+    const currentGrade = typeof editingValue.grade === 'string' 
+      ? (editingValue.grade === '' ? 0 : parseInt(editingValue.grade) || 0)
+      : editingValue.grade;
+    
+    return editingValue.class_name !== record.class_name || currentGrade !== record.grade;
   };
 
   if (classrooms.length === 0) {
@@ -167,10 +191,18 @@ export default function UpdateClassroomTable({
                     type="number"
                     min="1"
                     max="12"
-                    value={editingValues[record.id]?.grade || 0}
-                    onChange={(e) => 
-                      handleValueChange(record.id, 'grade', parseInt(e.target.value) || 0)
-                    }
+                    value={editingValues[record.id]?.grade ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '') {
+                        handleValueChange(record.id, 'grade', '');
+                      } else {
+                        const numValue = parseInt(value);
+                        if (!isNaN(numValue)) {
+                          handleValueChange(record.id, 'grade', numValue);
+                        }
+                      }
+                    }}
                     onKeyPress={(e) => handleKeyPress(e, record.id)}
                     className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     disabled={saving === record.id}
