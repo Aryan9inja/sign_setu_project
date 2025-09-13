@@ -8,6 +8,10 @@ Role-Based Row Level Security demo using Supabase RLS + Next.js App Router with 
 
 <br/>
 
+You can see integration tests proving the word:
+
+https://github.com/user-attachments/assets/2fba6085-c5c6-4bbc-ac92-840092864beb
+
 </div>
 
 ## 🚀 Overview
