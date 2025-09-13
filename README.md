@@ -74,6 +74,11 @@ While policies are defined in the Supabase dashboard, they follow these effectiv
 
 > The test suite (`tests/rls.test.ts`) asserts these invariants directly using signed JWTs for each role.
 
+This is the image of supabase showing implemented RLS:
+
+<img width="1402" height="860" alt="image" src="https://github.com/user-attachments/assets/4415f859-7da9-44fe-96ea-6d82a223456b" />
+
+
 ## 🧪 Testing Strategy
 The integration tests use **Vitest** + the official Supabase JS client:
 
