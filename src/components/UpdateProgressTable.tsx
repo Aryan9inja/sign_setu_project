@@ -14,7 +14,7 @@ export default function UpdateProgressTable({
   onProgressUpdate, 
   onProgressChange 
 }: UpdateProgressTableProps) {
-  const [editingValues, setEditingValues] = useState<{ [key: string]: number }>({});
+  const [editingValues, setEditingValues] = useState<{ [key: string]: number | string }>({});
   const [saving, setSaving] = useState<string | null>(null);
 
   // Initialize editing values when progress changes
@@ -26,7 +26,7 @@ export default function UpdateProgressTable({
     setEditingValues(initialValues);
   }, [progress]);
 
-  const handleProgressChange = (recordId: string, newValue: number) => {
+  const handleProgressChange = (recordId: string, newValue: number | string) => {
     setEditingValues(prev => ({
       ...prev,
       [recordId]: newValue
@@ -37,7 +37,11 @@ export default function UpdateProgressTable({
     const record = progress.find(p => p.id === recordId);
     if (!record) return;
 
-    const newProgress = editingValues[recordId];
+    const editingValue = editingValues[recordId];
+    // Convert string to number, handle empty string as 0
+    const newProgress = typeof editingValue === 'string' 
+      ? (editingValue === '' ? 0 : parseInt(editingValue) || 0)
+      : editingValue;
     const oldProgress = record.progress_percent;
 
     if (newProgress === oldProgress) return; // No change
@@ -54,6 +58,12 @@ export default function UpdateProgressTable({
         );
         onProgressChange(updatedProgress);
       }
+      
+      // Update local editing value to the final number
+      setEditingValues(prev => ({
+        ...prev,
+        [recordId]: newProgress
+      }));
     } catch (error) {
       // Revert the editing value on error
       setEditingValues(prev => ({
@@ -121,10 +131,18 @@ export default function UpdateProgressTable({
                     type="number"
                     min="0"
                     max="100"
-                    value={editingValues[record.id] || 0}
-                    onChange={(e) => 
-                      handleProgressChange(record.id, parseInt(e.target.value) || 0)
-                    }
+                    value={editingValues[record.id] ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '') {
+                        handleProgressChange(record.id, '');
+                      } else {
+                        const numValue = parseInt(value);
+                        if (!isNaN(numValue)) {
+                          handleProgressChange(record.id, numValue);
+                        }
+                      }
+                    }}
                     onKeyPress={(e) => handleKeyPress(e, record.id)}
                     className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     disabled={saving === record.id}
@@ -136,13 +154,25 @@ export default function UpdateProgressTable({
                     onClick={() => handleSaveProgress(record.id)}
                     disabled={
                       saving === record.id || 
-                      editingValues[record.id] === record.progress_percent
+                      (() => {
+                        const editingValue = editingValues[record.id];
+                        const currentValue = typeof editingValue === 'string' 
+                          ? (editingValue === '' ? 0 : parseInt(editingValue) || 0)
+                          : editingValue;
+                        return currentValue === record.progress_percent;
+                      })()
                     }
                     className={`
                       px-3 py-1 rounded-md text-xs font-medium transition-colors
                       ${saving === record.id 
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : editingValues[record.id] === record.progress_percent
+                        : (() => {
+                            const editingValue = editingValues[record.id];
+                            const currentValue = typeof editingValue === 'string' 
+                              ? (editingValue === '' ? 0 : parseInt(editingValue) || 0)
+                              : editingValue;
+                            return currentValue === record.progress_percent;
+                          })()
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'
                       }
